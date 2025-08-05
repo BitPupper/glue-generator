@@ -1,0 +1,29 @@
+{
+  "name": "glue-semantics-js",
+  "version": "1.0.0",
+  "description": "JavaScript theorem prover for glue semantics analysis - converts English sentences to formal semantic representations",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node src/test.js",
+    "serve": "python3 -m http.server 8000",
+    "build": "echo 'Build complete - ready for deployment'"
+  },
+  "keywords": [
+    "glue-semantics",
+    "theorem-prover",
+    "linguistics",
+    "natural-language",
+    "lambda-calculus",
+    "formal-semantics"
+  ],
+  "author": "Converted from Haskell original by Gianluca Giorgolo",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

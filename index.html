@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glue Semantics Theorem Prover</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .examples {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .examples h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .example-item {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .example-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .example-item code {
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+            font-weight: 600;
+        }
+
+        .results {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .result-status {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .proof-output {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .proof-tree {
+            margin: 15px auto;
+            text-align: center;
+        }
+
+        .proof-tree table {
+            margin: 10px auto;
+            border-collapse: collapse;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .proof-tree td {
+            padding: 8px 12px;
+            vertical-align: middle;
+        }
+
+        .rule-line {
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .rule-line hr {
+            border: none;
+            border-top: 2px solid #333;
+            margin: 0;
+        }
+
+        .rule-label {
+            position: absolute;
+            right: -25px;
+            top: -10px;
+            font-size: 0.9em;
+            background: white;
+            padding: 2px 5px;
+            border: 1px solid #333;
+            border-radius: 3px;
+        }
+
+        .sequent {
+            white-space: nowrap;
+            font-size: 16px;
+            padding: 10px;
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        .formula {
+            margin: 0 3px;
+        }
+
+        .conclusion {
+            font-weight: bold;
+            color: #d63384;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .format-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border: 1px solid #dee2e6;
+            background: #f8f9fa;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.2s ease;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom: 1px solid white;
+            color: #4facfe;
+            font-weight: 600;
+        }
+
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Glue Semantics Theorem Prover</h1>
+            <p>Interactive JavaScript implementation for formal semantic analysis</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="sequent-input">Enter a sequent to prove:</label>
+                    <input type="text" id="sequent-input" placeholder="e.g., p.s => p.s" />
+                </div>
+
+                <div class="input-group">
+                    <label for="format-select">Output format:</label>
+                    <select id="format-select">
+                        <option value="text">Text</option>
+                        <option value="html" selected>HTML</option>
+                        <option value="latex">LaTeX</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="proveSequent()">🔍 Prove Sequent</button>
+                    <button class="btn-secondary" onclick="clearResults()">🗑️ Clear</button>
+                    <button class="btn-secondary" onclick="showExamples()">📚 Examples</button>
+                </div>
+
+                <div id="examples-section" class="examples" style="display: none;">
+                    <h3>Example Sequents:</h3>
+                    <div class="example-item" onclick="setSequent('p.s => p.s')">
+                        <strong>Identity:</strong> <code>p.s => p.s</code>
+                    </div>
+                    <div class="example-item" onclick="setSequent('p.s -> q.s, p.s => q.s')">
+                        <strong>Modus Ponens:</strong> <code>p.s -> q.s, p.s => q.s</code>
+                    </div>
+                    <div class="example-item" onclick="setSequent('<ci>p.s => <ci>p.s')">
+                        <strong>Monadic Identity:</strong> <code>&lt;ci&gt;p.s => &lt;ci&gt;p.s</code>
+                    </div>
+                    <div class="example-item" onclick="setSequent('p.s * q.s => q.s * p.s')">
+                        <strong>Tensor Commutativity:</strong> <code>p.s * q.s => q.s * p.s</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Searching for proofs...</p>
+            </div>
+
+            <div class="results" id="results" style="display: none;">
+                <div id="result-status" class="result-status"></div>
+                
+                <div class="format-tabs" id="format-tabs" style="display: none;">
+                    <div class="tab active" onclick="switchTab('html')">HTML</div>
+                    <div class="tab" onclick="switchTab('text')">Text</div>
+                    <div class="tab" onclick="switchTab('latex')">LaTeX</div>
+                    <div class="tab" onclick="switchTab('json')">JSON</div>
+                </div>
+
+                <div id="proof-output" class="proof-output"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Converted from Haskell original by Gianluca Giorgolo | 
+               <a href="https://github.com/" style="color: #4facfe; text-decoration: none;">View Source</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the theorem prover modules
+        import { parseSequent } from './src/Parser.js';
+        import { findProof } from './src/TheoremProver.js';
+        import { formatProof, HTMLFormatter, TextFormatter, LaTeXFormatter, JSONFormatter } from './src/Formatters.js';
+
+        let currentProof = null;
+        let currentFormats = {};
+
+        window.proveSequent = async function() {
+            const input = document.getElementById('sequent-input').value.trim();
+            const format = document.getElementById('format-select').value;
+            
+            if (!input) {
+                showResult('error', 'Please enter a sequent to prove.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // Simulate async processing for better UX
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                const parseResult = parseSequent(input);
+                
+                if (!parseResult.success) {
+                    showResult('error', `Parse error: ${parseResult.error}`);
+                    return;
+                }
+
+                const sequent = parseResult.result.sequent;
+                const proof = findProof(sequent);
+                
+                if (proof) {
+                    currentProof = proof;
+                    
+                    // Generate all formats
+                    currentFormats = {
+                        html: HTMLFormatter.proof2html(proof),
+                        text: TextFormatter.decoratedSequent2text(proof.value),
+                        latex: LaTeXFormatter.proof2tex(proof),
+                        json: JSON.stringify(JSONFormatter.proof2json(proof), null, 2)
+                    };
+                    
+                    showResult('success', `✓ Proof found for: ${sequent.toString()}`);
+                    displayProof('html');
+                    showFormatTabs();
+                } else {
+                    showResult('info', `✗ No proof found for: ${sequent.toString()}`);
+                }
+                
+            } catch (error) {
+                showResult('error', `Error: ${error.message}`);
+            }
+        };
+
+        window.clearResults = function() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('sequent-input').value = '';
+            currentProof = null;
+            currentFormats = {};
+        };
+
+        window.showExamples = function() {
+            const examples = document.getElementById('examples-section');
+            examples.style.display = examples.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.setSequent = function(sequent) {
+            document.getElementById('sequent-input').value = sequent;
+            document.getElementById('examples-section').style.display = 'none';
+        };
+
+        window.switchTab = function(format) {
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Display proof in selected format
+            displayProof(format);
+        };
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function showResult(type, message) {
+            document.getElementById('loading').style.display = 'none';
+            
+            const results = document.getElementById('results');
+            const status = document.getElementById('result-status');
+            
+            status.className = `result-status status-${type}`;
+            status.textContent = message;
+            
+            results.style.display = 'block';
+        }
+
+        function showFormatTabs() {
+            document.getElementById('format-tabs').style.display = 'flex';
+        }
+
+        function displayProof(format) {
+            const output = document.getElementById('proof-output');
+            
+            if (currentFormats[format]) {
+                if (format === 'html') {
+                    output.innerHTML = currentFormats[format];
+                } else {
+                    output.innerHTML = `<pre>${escapeHtml(currentFormats[format])}</pre>`;
+                }
+            } else {
+                output.innerHTML = '<p>No proof available in this format.</p>';
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Handle Enter key in input
+        document.getElementById('sequent-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                proveSequent();
+            }
+        });
+
+        // Initial focus
+        document.getElementById('sequent-input').focus();
+    </script>
+</body>
+</html>
